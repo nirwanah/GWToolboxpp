@@ -171,11 +171,14 @@ namespace GW {
     namespace Items {
         GW::Constants::Rarity GetRarity(const GW::Item* item);
         ImColor GetRarityColor(const GW::Constants::Rarity rarity);
-        const wchar_t* GetItemTypeName(const GW::Constants::ItemType item_type);
-        const wchar_t* GetAttributeName(const GW::Constants::AttributeByte attribute);
-        const wchar_t* GetDamageTypeName(const GW::Constants::DamageType type);
-        const wchar_t* GetRarityName(const GW::Constants::Rarity rarity);
-        const wchar_t* GetItemTypeName(const GW::Constants::ItemType type);
+        const char* GetAttributeName(const GW::Constants::AttributeByte attribute);
+        const char* GetDamageTypeName(const GW::Constants::DamageType type);
+        const char* GetRarityName(const GW::Constants::Rarity rarity);
+        const char* GetItemTypeName(const GW::Constants::ItemType item_type);
+
+        uint32_t GetUses(GW::Item* item);
+        uint32_t GetAlcoholPointsPerUse(GW::Item* item);
+        bool IsAlcohol(GW::Item* item);
     }
 }
 
