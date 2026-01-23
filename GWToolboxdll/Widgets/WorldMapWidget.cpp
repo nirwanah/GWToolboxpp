@@ -91,33 +91,19 @@ namespace {
     float quest_icon_size_half = 12.f;
     ImDrawList* draw_list = nullptr;
 
-
-    static bool IsMissionMap(GW::Constants::MapID id, const GW::AreaInfo* info = nullptr) {
-        if (!info) info = GW::Map::GetMapInfo(id);
-        if (!info) return false;
-        const auto t = info->type;
-        return (t == GW::RegionType::MissionOutpost ||
-                t == GW::RegionType::EotnMission ||
-                t == GW::RegionType::CooperativeMission);
-    }
-
-    static bool IsChallengeMap(GW::Constants::MapID id, const GW::AreaInfo* info = nullptr) {
-        if (!info) info = GW::Map::GetMapInfo(id);
-        if (!info) return false;
-        return info->type == GW::RegionType::Challenge;
-    }
-    
-
     std::string BossInfo(const EliteBossLocation* boss)
     {
         const auto map_info = GW::Map::GetMapInfo(boss->map_id);
-        std::string mission_suffix;
-        if (map_info) {
-            if (IsMissionMap(boss->map_id, map_info)) {
+        const char* mission_suffix = "";
+        switch (map_info->type) {
+            case GW::RegionType::MissionOutpost:
+            case GW::RegionType::EotnMission:
+            case GW::RegionType::CooperativeMission:
                 mission_suffix = " (Mission)";
-            } else if (IsChallengeMap(boss->map_id, map_info)) {
+                break;
+            case GW::RegionType::Challenge:
                 mission_suffix = " (Challenge)";
-            }
+                break;
         }
 
         auto str = std::format(
