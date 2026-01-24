@@ -236,15 +236,15 @@ namespace {
     // Data structures
     struct Price {
         Currency type = Currency::Platinum;
-        int quantity = 1;
+        float quantity = 1.f;
         float price = 5.f;
 
         static Price FromJson(const json& j)
         {
             Price p;
             p.type = static_cast<Currency>(parseIntFromJson(j, "type", 0));
-            p.quantity = parseIntFromJson(j, "quantity", 0);
-            p.quantity = parseIntFromJson(j, "unit", p.quantity);
+            p.quantity = (float)parseIntFromJson(j, "quantity", 0);
+            p.quantity = parseFloatFromJson(j, "unit", p.quantity);
             p.price = parseFloatFromJson(j, "price", 0.f);
             return p;
         }
@@ -1207,8 +1207,13 @@ namespace {
                 ImGui::Text("%.2f %s", price.price, GetPriceTypeString(price.type));
             }
             ImGui::SameLine();
+
             const auto price_per = order.price_per();
-            ImGui::TextDisabled(price_per == static_cast<int>(price_per) ? "(%.0f %s each)" : "(%.1f %s each)", price_per, GetPriceTypeString(price.type));
+            int decimal_places = GuiUtils::DecimalPlaces(price_per);
+            char fmt[32];
+            snprintf(fmt, sizeof(fmt), "(%%.%df %%s each)", decimal_places);
+            ImGui::TextDisabled(fmt, price_per, GetPriceTypeString(price.type));
+
             const auto original_cursor_pos = ImGui::GetCursorPos();
 
             ImGui::SetCursorPos({ImGui::GetContentRegionAvail().x - 100.f, top + 5.f});
