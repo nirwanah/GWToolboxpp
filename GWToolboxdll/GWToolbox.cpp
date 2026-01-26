@@ -868,6 +868,8 @@ std::filesystem::path GWToolbox::SaveSettings()
 
 void GWToolbox::ForceTerminate(bool detach_wndproc_handler)
 {
+    if (gwtoolbox_state == GWToolboxState::Terminated) 
+        return;
     ASSERT(DetachGameLoopCallback());
     ASSERT(!detach_wndproc_handler || DetachWndProcHandler());
 
@@ -982,6 +984,7 @@ void GWToolbox::Update(GW::HookStatus*)
 
 void GWToolbox::Draw(IDirect3DDevice9* device)
 {
+    HookUiRoot();
     switch (gwtoolbox_state) {
         case GWToolboxState::DrawTerminating:
             return DrawTerminating(device);
