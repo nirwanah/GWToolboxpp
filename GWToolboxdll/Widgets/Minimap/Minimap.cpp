@@ -616,17 +616,13 @@ void Minimap::DrawHelp()
 void Minimap::SignalTerminate()
 {
     terminating = true;
-
-    range_renderer.Terminate();
-    pmap_renderer.Terminate();
-    agent_renderer.Terminate();
-    pingslines_renderer.Terminate();
-    symbols_renderer.Terminate();
-    custom_renderer.Terminate();
-    effect_renderer.Terminate();
-    GameWorldRenderer::Terminate();
-
-    hide_flagging_controls_patch.Reset();
+    GW::GameThread::Enqueue([] {
+        RefreshQuestMarker();
+        ResetWindowPosition(GW::UI::WindowID_Compass, compass_frame);
+        terminating = false;
+        });
+}
+void Minimap::Terminate() {
 
     GW::UI::RemoveKeydownCallback(&Generic_HookEntry);
     GW::UI::RemoveKeyupCallback(&Generic_HookEntry);
@@ -637,11 +633,21 @@ void Minimap::SignalTerminate()
 
     GW::Chat::DeleteCommand(&ChatCmd_HookEntry);
 
-    GW::GameThread::Enqueue([] {
-        RefreshQuestMarker();
-        ResetWindowPosition(GW::UI::WindowID_Compass, compass_frame);
-        terminating = false;
-        });
+    hide_flagging_controls_patch.Reset();
+
+    ToolboxWidget::Terminate();
+    range_renderer.Terminate();
+    pmap_renderer.Terminate();
+    agent_renderer.Terminate();
+    pingslines_renderer.Terminate();
+    symbols_renderer.Terminate();
+    custom_renderer.Terminate();
+    effect_renderer.Terminate();
+    GameWorldRenderer::Terminate();
+
+    
+
+
 }
 
 bool Minimap::CanTerminate()
@@ -689,7 +695,7 @@ void Minimap::Initialize()
         GW::UI::UIMessage::kDestroyUIPositionOverlay
     };
     for (const auto message_id : hook_messages) {
-        RegisterUIMessageCallback(&Generic_HookEntry, message_id, OnUIMessage);
+        RegisterUIMessageCallback(&Generic_HookEntry, message_id, OnUIMessage,0x8000);
     }
 
     if (GW::Map::GetInstanceType() != GW::Constants::InstanceType::Loading) {

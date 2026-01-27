@@ -233,9 +233,12 @@ void AgentRenderer::LoadCustomAgents()
     }
     ASSERT(agentcolorinifile->LoadIfExists(Resources::GetSettingFile(AGENTCOLOR_INIFILENAME)) == SI_OK);
 
-    custom_agents.clear();
     custom_agents_map.clear();
-
+    for (const CustomAgent* ca : custom_agents) {
+        delete ca;
+    }
+    custom_agents.clear();
+    
     ToolboxIni::TNamesDepend entries;
     agentcolorinifile->GetAllSections(entries);
 
@@ -496,11 +499,11 @@ void AgentRenderer::DrawSettings()
 void AgentRenderer::Terminate()
 {
     VBuffer::Terminate();
+    custom_agents_map.clear();
     for (const CustomAgent* ca : custom_agents) {
         delete ca;
     }
     custom_agents.clear();
-    custom_agents_map.clear();
     RemoveMarkedTarget();
     GW::Chat::DeleteCommand(&ChatCmd_HookEntry);
 }
