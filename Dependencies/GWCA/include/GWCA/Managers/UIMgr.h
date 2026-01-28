@@ -840,7 +840,7 @@ namespace GW {
 
         GWCA_API bool TriggerFrameRedraw(UI::Frame* frame);
 
-        GWCA_API bool SetFramePosition(UI::Frame* frame, UI::FramePosition& position);
+        GWCA_API bool SetFramePosition(UI::Frame* frame, const UI::FramePosition* position);
 
         // When the player is actively using a game controller
         GWCA_API bool IsInControllerMode();
