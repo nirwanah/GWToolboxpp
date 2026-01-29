@@ -244,7 +244,7 @@ namespace {
             position->state |= 1;
         }
         else {
-            position->state &= 0xfffffff0;
+            position->state &= ~1;
         }
         // Swap position out, send UI message to cascade to frames, then set back to original
         GW::UI::SendUIMessage(GW::UI::UIMessage::kUIPositionChanged, &packet);
