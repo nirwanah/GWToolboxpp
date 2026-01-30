@@ -27,6 +27,7 @@
 #include <GWCA/Managers/StoCMgr.h>
 #include <GWCA/Utilities/MemoryPatcher.h>
 #include <Utils/ToolboxUtils.h>
+#include "AudioSettings.h"
 
 namespace {
     bool draw_quest_path_on_terrain = false;
@@ -739,13 +740,20 @@ void QuestModule::FetchMissingQuestInfo()
 {
     if (TIMER_DIFF(last_fetched_missing_quest_info) < 250) return;
     last_fetched_missing_quest_info = TIMER_INIT();
+    
     GW::GameThread::Enqueue([] {
+        bool requested = false;
         const auto quest_log = GW::QuestMgr::GetQuestLog();
         if (!quest_log) return;
         for (auto& quest : *quest_log) {
             if ((quest.log_state & 1) == 0) {
                 GW::QuestMgr::RequestQuestInfo(&quest, true);
+                requested = true;
             }
+        }
+        if (requested) {
+            // Block quest change sound that this will trigger.
+            AudioSettings::BlockSoundForMs(L"\xe14c\x0101", 500);
         }
     });
 }
